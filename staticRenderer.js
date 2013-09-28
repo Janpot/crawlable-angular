@@ -6,7 +6,9 @@
 var jsdom = require('jsdom');
 
 module.exports = function init(config) {
-  config = config || {};
+  if (!config || typeof config.host !== 'string') {
+    throw new Error('"config.host" is required.');
+  }
   
   return function (req, res, next) {
     
