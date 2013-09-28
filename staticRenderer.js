@@ -7,6 +7,21 @@ var jsdom = require('jsdom');
 
 module.exports = function init(config) {
   return function (req, res, next) {
+    
+    function processSnapshot(window) {
+      if (config.stripScripts) {
+        var scripts = window.document.querySelectorAll('script');
+        var i;
+        for (i = 0; i < scripts.length; i += 1) {
+          var script = scripts[i];
+          script.parentNode.removeChild(script);
+        }
+      }
+      // TO DO: cache this
+      var html = window.document.innerHTML;
+      res.send(200, html);
+    }
+    
     var path = req.query._escaped_fragment_;
     
     if (path) {
@@ -22,21 +37,26 @@ module.exports = function init(config) {
             // TO DO: analyze errors and send meaningful http response codes
             res.send(500, errors);
           } else {
-            // TO DO: investigate ways to communicate between server and DOM
-            // to signal rendering is finished
-            setTimeout(function () {
-              if (config.stripScripts) {
-                var scripts = window.document.querySelectorAll('script');
-                var i;
-                for (i = 0; i < scripts.length; i += 1) {
-                  var script = scripts[i];
-                  script.parentNode.removeChild(script);
-                }
+            
+            var timeout = setTimeout(function () {
+              processSnapshot(window);
+            }, config.timeout || 10000);
+            
+            window._onSnapshotReady = function (error) {
+              if (timeout) {
+                clearTimeout(timeout);
+                timeout = null;
               }
-              // TO DO: cache this
-              var html = window.document.innerHTML;
-              res.send(200, html);
-            }, 10000);
+              
+              if (error) {
+                res.send(error);
+              } else {
+                processSnapshot(window);
+              }
+              
+              window._onSnapshotReady = null;
+            };
+            
           }
         }
       });

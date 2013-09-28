@@ -2,9 +2,35 @@
 /*global angular*/
 
 angular.module('app', [])
+
+  .provider('snapshot', function () {
+    'use strict';
+    
+    function signalReady(error) {
+      if (angular.isFunction(window._onSnapshotReady)) {
+        window._onSnapshotReady(error);
+        throw 'kill';
+      }
+    }
+    
+    this.notFound = function () {
+      signalReady(404);
+    };
+    
+    this.$get = function() {
+      return {
+        ready: function ready() {
+          setTimeout(signalReady, 0);
+        }
+      };
+    };
+    
+  })
+
   .config(function (
     $locationProvider,
-    $routeProvider
+    $routeProvider,
+    snapshotProvider
   ) {
     'use strict';
     
@@ -17,17 +43,25 @@ angular.module('app', [])
     });
     
     $routeProvider.otherwise({
-      redirectTo: '/home'
+      redirectTo: function () {
+        snapshotProvider.notFound();
+        return '/home';
+      }
     });
     
   })
 
   .controller('home', function (
     $scope,
-    $http
+    $http,
+    snapshot
   ) {
     'use strict';
     
     $scope.result = $http.get('xhr');
+    
+    $scope.result.then(function () {
+      snapshot.ready();
+    });
     
   });
