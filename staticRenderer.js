@@ -6,6 +6,8 @@
 var jsdom = require('jsdom');
 
 module.exports = function init(config) {
+  config = config || {};
+  
   return function (req, res, next) {
     
     function processSnapshot(window) {
