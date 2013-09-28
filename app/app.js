@@ -9,7 +9,9 @@ angular.module('app', [])
     function signalReady(error) {
       if (angular.isFunction(window._onSnapshotReady)) {
         window._onSnapshotReady(error);
-        throw 'kill';
+        if (error) {
+          throw 'kill';
+        }
       }
     }
     
