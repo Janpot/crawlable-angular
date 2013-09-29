@@ -1,7 +1,7 @@
 /*jslint es5: true, devel: true, node: true, indent: 2, vars: true, white: true, nomen: true, browser: true */
 /*global angular*/
 
-angular.module('app', [])
+angular.module('app', ['ngRoute'])
 
   .provider('snapshot', function () {
     'use strict';
