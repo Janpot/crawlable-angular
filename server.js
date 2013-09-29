@@ -4,9 +4,8 @@
 'use strict';
 
 var express        = require('express'),
-    staticRenderer = require('./staticRenderer');
-
-var port = process.env.PORT || 3000;
+    staticRenderer = require('./staticRenderer'),
+    port           = process.env.PORT || 3000;
 
 var server = express();
 server.configure(function () {
