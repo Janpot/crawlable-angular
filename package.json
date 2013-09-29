@@ -4,8 +4,8 @@
   "description": "Investigation in how to make angular applications crawlable",
   "main": "server.js",
   "dependencies": {
-    "express": "~3.4.0",
-    "jsdom": "~0.8.5"
+    "express": "~3.4",
+    "jsdom": "~0.8"
   },
   "devDependencies": {},
   "scripts": {
